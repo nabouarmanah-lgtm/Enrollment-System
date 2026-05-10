@@ -38,13 +38,22 @@ public class EnrollmentDAO {
     public boolean insert(Enrollment e) {
         try {
             Connection con = DBConnection.getInstance().getConnection();
+
+            // Check duplicate
+            String checkSql = "SELECT COUNT(*) FROM enrollment WHERE student_id=? AND course_id=?";
+            PreparedStatement checkPs = con.prepareStatement(checkSql);
+            checkPs.setInt(1, e.getStudentId());
+            checkPs.setInt(2, e.getCourseId());
+            ResultSet rs = checkPs.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return false;
+            }
+
             String sql = "INSERT INTO enrollment (student_id, course_id, enroll_date) VALUES (?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
-
             ps.setInt(1, e.getStudentId());
             ps.setInt(2, e.getCourseId());
             ps.setString(3, e.getEnrollDate());
-
             ps.executeUpdate();
             return true;
 
@@ -59,10 +68,8 @@ public class EnrollmentDAO {
             Connection con = DBConnection.getInstance().getConnection();
             String sql = "DELETE FROM enrollment WHERE enroll_id=?";
             PreparedStatement ps = con.prepareStatement(sql);
-
             ps.setInt(1, e.getEnrollId());
             ps.executeUpdate();
-
             return true;
 
         } catch (Exception ex) {
@@ -76,10 +83,8 @@ public class EnrollmentDAO {
             Connection con = DBConnection.getInstance().getConnection();
             String sql = "UPDATE enrollment SET enroll_date=? WHERE enroll_id=?";
             PreparedStatement ps = con.prepareStatement(sql);
-
             ps.setString(1, e.getEnrollDate());
             ps.setInt(2, e.getEnrollId());
-
             ps.executeUpdate();
             return true;
 
