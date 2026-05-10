@@ -41,40 +41,33 @@ public class EnrollmentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        // تحميل الطلاب في ComboBox
         studentsCombobox.getItems().addAll(studentDAO.getAllStudentsids());
-
-        // كورسات ثابتة
         coursesCombobox.getItems().addAll(1, 2, 3, 4);
 
-        // ربط الأعمدة بالبيانات
-        enrollIdTC.setCellValueFactory(data -> 
+        enrollIdTC.setCellValueFactory(data ->
             new javafx.beans.property.SimpleIntegerProperty(data.getValue().getEnrollId()).asObject());
 
-        studentIdTC.setCellValueFactory(data -> 
+        studentIdTC.setCellValueFactory(data ->
             new javafx.beans.property.SimpleIntegerProperty(data.getValue().getStudentId()).asObject());
 
-        courseIdTC.setCellValueFactory(data -> 
+        courseIdTC.setCellValueFactory(data ->
             new javafx.beans.property.SimpleIntegerProperty(data.getValue().getCourseId()).asObject());
 
-        enrollDateTC.setCellValueFactory(data -> 
+        enrollDateTC.setCellValueFactory(data ->
             new javafx.beans.property.SimpleStringProperty(data.getValue().getEnrollDate()));
     }
 
-    // ================= VIEW =================
     @FXML
     public void viewHandle() {
         table.getItems().setAll(dao.findAll());
     }
 
-    // ================= ADD =================
     @FXML
     public void addHandle() {
 
-        if (studentsCombobox.getValue() == null 
-                || coursesCombobox.getValue() == null 
+        if (studentsCombobox.getValue() == null
+                || coursesCombobox.getValue() == null
                 || enrollDate.getValue() == null) {
-
             showWarning("Missing Data");
             return;
         }
@@ -89,10 +82,11 @@ public class EnrollmentController implements Initializable {
         if (dao.insert(e)) {
             showInfo("Added Successfully");
             viewHandle();
+        } else {
+            showWarning("Student already enrolled in this course!");
         }
     }
 
-    // ================= UPDATE =================
     @FXML
     public void updateHandle() {
 
@@ -111,7 +105,6 @@ public class EnrollmentController implements Initializable {
         }
     }
 
-    // ================= DELETE =================
     @FXML
     public void deleteHandle() {
 
@@ -128,7 +121,6 @@ public class EnrollmentController implements Initializable {
         }
     }
 
-    // ================= ALERTS =================
     private void showWarning(String msg) {
         new Alert(Alert.AlertType.WARNING, msg).showAndWait();
     }
